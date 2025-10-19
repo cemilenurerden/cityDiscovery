@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white, // Ana arkaplan beyaz
-    paddingTop: 80, // Üstten boşluk
+    paddingTop: 70, // Üstten boşluk
   },
   scrollContainer: {
     flexGrow: 1, // İçeriğin büyümesini sağlar
