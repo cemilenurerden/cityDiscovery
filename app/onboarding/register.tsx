@@ -1,6 +1,7 @@
 // app/onboarding/register.tsx
+// Register screen - UI only
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -10,35 +11,26 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
 
-// Ortak Bileşenler
 import PrimaryButton from '../../components/PrimaryButton';
 import StyledTextInput from '../../components/StyledTextInput';
 import AuthFooter from '../../components/AuthFooter';
-import { Colors } from '../../constants/Colors'; // Renkler
+import { Colors } from '../../constants/Colors';
+import { container } from '../../di/Container';
+import { useRegisterViewModel } from '../../viewmodels/useRegisterViewModel';
 
 export default function Register() {
-  const [name, setName] = useState('');
-  const [surname, setSurname] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordConfirm, setPasswordConfirm] = useState('');
-
-  const onRegister = () => {
-    console.log('Kayıt ol:', { name, surname, email, password });
-    // TODO: Kayıt başarılı olunca ana sayfaya yönlendir
-    // router.replace('/(tabs)/home'); 
-  };
-
-  const onLogin = () => {
-    // Geri git (login sayfası zaten stack'te)
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/onboarding/login'); // Güvenlik önlemi
-    }
-  };
+  const authRepository = container.getAuthRepository();
+  const {
+    state,
+    setName,
+    setSurname,
+    setEmail,
+    setPassword,
+    setPasswordConfirm,
+    register,
+    navigateToLogin,
+  } = useRegisterViewModel(authRepository);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -46,7 +38,7 @@ export default function Register() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.flex}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContainer}
           showsVerticalScrollIndicator={false}
           alwaysBounceVertical={false}
@@ -62,49 +54,63 @@ export default function Register() {
               <StyledTextInput
                 iconName="user"
                 placeholder="Ad"
-                value={name}
+                value={state.name}
                 onChangeText={setName}
+                editable={!state.loading}
               />
               <StyledTextInput
-                iconName="user-check" // Soyad için farklı bir ikon
+                iconName="user-check"
                 placeholder="Soyad"
-                value={surname}
+                value={state.surname}
                 onChangeText={setSurname}
+                editable={!state.loading}
               />
               <StyledTextInput
                 iconName="mail"
                 placeholder="E-posta Adresi"
                 keyboardType="email-address"
-                value={email}
+                value={state.email}
                 onChangeText={setEmail}
+                autoCapitalize="none"
+                editable={!state.loading}
               />
               <StyledTextInput
                 iconName="lock"
                 placeholder="Şifre"
                 secureTextEntry
-                value={password}
+                value={state.password}
                 onChangeText={setPassword}
+                editable={!state.loading}
               />
               <StyledTextInput
-                iconName="refresh-cw" // Şifre tekrar için
+                iconName="refresh-cw"
                 placeholder="Şifre Tekrar"
                 secureTextEntry
-                value={passwordConfirm}
+                value={state.passwordConfirm}
                 onChangeText={setPasswordConfirm}
+                editable={!state.loading}
               />
-              {/* Buton, şeftali rengi alana taşındı */}
+              {state.error && (
+                <View style={styles.errorContainer}>
+                  <Text style={styles.errorText}>{state.error}</Text>
+                </View>
+              )}
             </View>
           </View>
-          
+
           {/* 2. ŞEFTALİ ALANI: Buton ve "Giriş Yap" Linki */}
           <View style={styles.footerContainer}>
-            {/* Buton buranın en üstünde */}
-            <PrimaryButton title="Kayıt Ol" onPress={onRegister} style={styles.registerButton} />
+            <PrimaryButton
+              title={state.loading ? 'Kayıt olunuyor...' : 'Kayıt Ol'}
+              onPress={register}
+              style={styles.registerButton}
+              disabled={state.loading}
+            />
 
             <AuthFooter
               text="Zaten hesabın var mı?"
               linkText="Giriş Yap"
-              onPress={onLogin}
+              onPress={navigateToLogin}
             />
           </View>
         </ScrollView>
@@ -119,17 +125,17 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.white, // Ana arkaplan beyaz
-    paddingTop: 40, // Üstten boşluk
+    backgroundColor: Colors.white,
+    paddingTop: 40,
   },
   scrollContainer: {
-    flexGrow: 1, // İçeriğin büyümesini sağlar
+    flexGrow: 1,
   },
-  mainContent: { // Beyaz alan
+  mainContent: {
     justifyContent: 'center',
     paddingHorizontal: 24,
-    paddingTop: 40, // Üstten boşluk
-    paddingBottom: 30, // Beyaz alanın altındaki boşluk
+    paddingTop: 40,
+    paddingBottom: 30,
   },
   header: {
     alignItems: 'center',
@@ -149,15 +155,25 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  footerContainer: { // Şeftali alanı
-    flex: 1, // Kalan tüm alanı kaplar
-    backgroundColor: Colors.background, // Şeftali rengi
+  footerContainer: {
+    flex: 1,
+    backgroundColor: Colors.background,
     paddingHorizontal: 24,
-    paddingTop: 30, // Buton ile beyaz alan arasına boşluk
-    borderTopLeftRadius: 30, // Yuvarlak köşeler
+    paddingTop: 30,
+    borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
   },
   registerButton: {
-    marginBottom: 15, // AuthFooter'dan önce boşluk
+    marginBottom: 15,
+  },
+  errorContainer: {
+    width: '100%',
+    marginTop: 12,
+    paddingHorizontal: 4,
+  },
+  errorText: {
+    color: '#EF4444',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });

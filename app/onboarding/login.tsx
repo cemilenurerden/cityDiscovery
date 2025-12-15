@@ -1,6 +1,7 @@
 // app/onboarding/login.tsx
+// Login screen - UI only
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -11,29 +12,18 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { AntDesign } from '@expo/vector-icons'; // Google/Apple ikonları için
+import { AntDesign } from '@expo/vector-icons';
 
-// Ortak Bileşenler
 import PrimaryButton from '../../components/PrimaryButton';
 import StyledTextInput from '../../components/StyledTextInput';
 import AuthFooter from '../../components/AuthFooter';
-import { Colors } from '../../constants/Colors'; // Renkler
+import { Colors } from '../../constants/Colors';
+import { container } from '../../di/Container';
+import { useLoginViewModel } from '../../viewmodels/useLoginViewModel';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const onLogin = () => {
-    console.log('Giriş yap:', { email, password });
-    // TODO: Giriş başarılı olunca ana sayfaya yönlendir
-    // router.replace('/(tabs)/home'); 
-  };
-
-  const onRegister = () => {
-    // Hatayı düzelttik: Tam (absolute) yol kullanıyoruz
-    router.push('/onboarding/register');
-  };
+  const authRepository = container.getAuthRepository();
+  const { state, setEmail, setPassword, login, navigateToRegister } = useLoginViewModel(authRepository);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -41,7 +31,7 @@ export default function Login() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.flex}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContainer}
           showsVerticalScrollIndicator={false}
           alwaysBounceVertical={false}
@@ -58,24 +48,35 @@ export default function Login() {
                 iconName="mail"
                 placeholder="E-posta Adresi"
                 keyboardType="email-address"
-                value={email}
+                value={state.email}
                 onChangeText={setEmail}
+                autoCapitalize="none"
+                editable={!state.loading}
               />
               <StyledTextInput
                 iconName="lock"
                 placeholder="Şifre"
                 secureTextEntry
-                value={password}
+                value={state.password}
                 onChangeText={setPassword}
+                editable={!state.loading}
               />
-              {/* Buton, şeftali rengi alana taşındı */}
+              {state.error && (
+                <View style={styles.errorContainer}>
+                  <Text style={styles.errorText}>{state.error}</Text>
+                </View>
+              )}
             </View>
           </View>
 
           {/* 2. ŞEFTALİ ALANI: Buton, "Veya", Sosyal Medya ve Kayıt Linki */}
           <View style={styles.footerContainer}>
-            {/* Buton buranın en üstünde */}
-            <PrimaryButton title="Giriş Yap" onPress={onLogin} style={styles.loginButton} />
+            <PrimaryButton
+              title={state.loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
+              onPress={login}
+              style={styles.loginButton}
+              disabled={state.loading}
+            />
 
             <View style={styles.dividerContainer}>
               <View style={styles.dividerLine} />
@@ -88,14 +89,14 @@ export default function Login() {
                 <AntDesign name="google" size={24} color="#DB4437" />
               </TouchableOpacity>
               <TouchableOpacity style={styles.socialButton}>
-                <AntDesign name1="apple1" size={24} color="#000000" />
+                <AntDesign name="apple1" size={24} color="#000000" />
               </TouchableOpacity>
             </View>
 
             <AuthFooter
               text="Hesabın yok mu?"
               linkText="Kayıt Ol"
-              onPress={onRegister}
+              onPress={navigateToRegister}
             />
           </View>
         </ScrollView>
@@ -110,17 +111,17 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.white, // Ana arkaplan beyaz
-    paddingTop: 70, // Üstten boşluk
+    backgroundColor: Colors.white,
+    paddingTop: 70,
   },
   scrollContainer: {
-    flexGrow: 1, // İçeriğin büyümesini sağlar
+    flexGrow: 1,
   },
-  mainContent: { // Beyaz alan
+  mainContent: {
     justifyContent: 'center',
     paddingHorizontal: 24,
-    paddingTop: 40, // Üstten boşluk
-    paddingBottom: 30, // Beyaz alanın altındaki boşluk
+    paddingTop: 40,
+    paddingBottom: 30,
   },
   header: {
     alignItems: 'center',
@@ -140,22 +141,22 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
   },
-  footerContainer: { // Şeftali alanı
-    flex: 1, // Kalan tüm alanı kaplar
-    backgroundColor: Colors.background, // Şeftali rengi
+  footerContainer: {
+    flex: 1,
+    backgroundColor: Colors.background,
     paddingHorizontal: 24,
-    paddingTop: 30, // Buton ile beyaz alan arasına boşluk
-    borderTopLeftRadius: 30, // Yuvarlak köşeler
+    paddingTop: 30,
+    borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
   },
   loginButton: {
-    marginBottom: 15, // "Veya" yazısından önce boşluk
+    marginBottom: 15,
   },
   dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    marginBottom: 25, // Sosyal ikonlarla arasına boşluk
+    marginBottom: 25,
   },
   dividerLine: {
     flex: 1,
@@ -181,5 +182,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     borderWidth: 1,
     borderColor: Colors.borderColor,
+  },
+  errorContainer: {
+    width: '100%',
+    marginTop: 12,
+    paddingHorizontal: 4,
+  },
+  errorText: {
+    color: '#EF4444',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });
