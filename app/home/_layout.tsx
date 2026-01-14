@@ -19,14 +19,12 @@ export default function HomeLayout() {
     label: string;
     icon: FeatherIconName;
     route: string;
-    isFAB?: boolean;
   }> = [
-    { name: 'home', label: 'Keşfet', icon: 'compass', route: '/home' },
-    { name: 'map', label: 'Harita', icon: 'map', route: '/home/map' },
-    { name: 'add', label: '', icon: 'plus', route: '/home/add-venue', isFAB: true },
-    { name: 'favorites', label: 'Favoriler', icon: 'heart', route: '/home/favorites' },
-    { name: 'profile', label: 'Profil', icon: 'user', route: '/home/profile' },
-  ];
+      { name: 'home', label: 'Keşfet', icon: 'compass', route: '/home' },
+      { name: 'map', label: 'Harita', icon: 'map', route: '/home/map' },
+      { name: 'favorites', label: 'Favoriler', icon: 'heart', route: '/home/favorites' },
+      { name: 'profile', label: 'Profil', icon: 'user', route: '/home/profile' },
+    ];
 
   const isActive = (route: string) => {
     if (route === '/home') {
@@ -49,19 +47,6 @@ export default function HomeLayout() {
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         {tabs.map((tab) => {
-          if (tab.isFAB) {
-            return (
-              <TouchableOpacity
-                key={tab.name}
-                style={styles.fab}
-                onPress={() => router.push(tab.route)}
-                activeOpacity={0.8}
-              >
-                <Feather name={tab.icon} size={24} color={Colors.white} />
-              </TouchableOpacity>
-            );
-          }
-
           const active = isActive(tab.route);
           return (
             <TouchableOpacity

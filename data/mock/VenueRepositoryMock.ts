@@ -28,6 +28,15 @@ const MOCK_VENUES: Venue[] = [
     isFavorite: false,
     lat: 40.9848,
     lng: 29.0244,
+    photos: [
+      'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=800',
+      'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800',
+      'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800',
+    ],
+    openingHours: '09:00 - 23:00',
+    phoneNumber: '+90 216 555 1234',
+    address: 'Caferağa Mahallesi, Moda Caddesi No:42, Kadıköy/İstanbul',
+    description: 'Espresso Lab, modern ve sıcak bir atmosferde en kaliteli kahve çekirdeklerini kullanarak hazırladığı özel kahveleriyle misafirlerini ağırlıyor. Deneyimli baristalarımız her fincan kahveyi özenle hazırlar. Ayrıca taze pasta ve sandviçlerimizle de kahve keyfinizi tamamlayabilirsiniz.',
   },
   {
     id: '2',
