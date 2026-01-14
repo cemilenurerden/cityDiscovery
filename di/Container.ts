@@ -13,6 +13,7 @@ import { FavoriteRepositoryImpl } from '../data/repositories/FavoriteRepositoryI
 import { GetNearbyVenuesUseCase } from '../domain/services/GetNearbyVenuesUseCase';
 import { SearchVenuesUseCase } from '../domain/services/SearchVenuesUseCase';
 import { ToggleFavoriteUseCase } from '../domain/services/ToggleFavoriteUseCase';
+import { GetFavoritesUseCase } from '../domain/services/GetFavoritesUseCase';
 
 // Configuration: Change this to false when backend is ready
 const USE_MOCK_REPOSITORY = true;
@@ -31,6 +32,7 @@ class Container {
   private getNearbyVenuesUseCase: GetNearbyVenuesUseCase;
   private searchVenuesUseCase: SearchVenuesUseCase;
   private toggleFavoriteUseCase: ToggleFavoriteUseCase;
+  private getFavoritesUseCase: GetFavoritesUseCase;
 
   constructor() {
     // Initialize mock repository
@@ -58,6 +60,7 @@ class Container {
     this.getNearbyVenuesUseCase = new GetNearbyVenuesUseCase(this.venueRepository);
     this.searchVenuesUseCase = new SearchVenuesUseCase(this.venueRepository);
     this.toggleFavoriteUseCase = new ToggleFavoriteUseCase(this.favoriteRepository);
+    this.getFavoritesUseCase = new GetFavoritesUseCase(this.favoriteRepository);
   }
 
   // Getters
@@ -87,6 +90,10 @@ class Container {
 
   getToggleFavoriteUseCase(): ToggleFavoriteUseCase {
     return this.toggleFavoriteUseCase;
+  }
+
+  getGetFavoritesUseCase(): GetFavoritesUseCase {
+    return this.getFavoritesUseCase;
   }
 }
 
