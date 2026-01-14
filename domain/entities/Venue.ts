@@ -20,4 +20,10 @@ export interface Venue {
   isFavorite: boolean;
   lat?: number;
   lng?: number;
+  // Detail page fields
+  photos?: string[]; // Additional photos for gallery
+  openingHours?: string; // e.g., "09:00 - 23:00"
+  phoneNumber?: string;
+  address?: string; // Full address
+  description?: string; // Long description
 }
