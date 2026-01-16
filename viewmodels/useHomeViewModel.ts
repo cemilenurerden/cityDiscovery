@@ -198,6 +198,19 @@ export function useHomeViewModel(
     }
   }, [state.userLocation, state.selectedCategory, handleSearch, loadNearbyVenues]);
 
+  const toggleSave = useCallback(async (venueId: string) => {
+    // Import repository directly for save toggle
+    const { VenueRepositoryMock } = await import('../data/mock/VenueRepositoryMock');
+    const repo = new VenueRepositoryMock();
+    const newSavedState = await repo.toggleSave(venueId);
+    setState(prev => ({
+      ...prev,
+      venues: prev.venues.map(v =>
+        v.id === venueId ? { ...v, isSaved: newSavedState } : v
+      ),
+    }));
+  }, []);
+
   return {
     state,
     loadNearbyVenues,
@@ -205,6 +218,7 @@ export function useHomeViewModel(
     loadMore,
     selectCategory,
     toggleFavorite,
+    toggleSave,
     setLocation,
     setUserLocation,
     setSearchQuery,

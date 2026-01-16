@@ -12,6 +12,7 @@ interface VenueCardProps {
   onPress: () => void;
   onFavoritePress: () => void;
   onCommentPress: () => void;
+  onSavePress: () => void;
   onMorePress: () => void;
 }
 
@@ -20,6 +21,7 @@ export default function VenueCard({
   onPress,
   onFavoritePress,
   onCommentPress,
+  onSavePress,
   onMorePress,
 }: VenueCardProps) {
   const handleShare = async () => {
@@ -105,8 +107,8 @@ export default function VenueCard({
           >
             <Feather name="share-2" size={20} color={Colors.white} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionIcon} activeOpacity={0.7}>
-            <Feather name="bookmark" size={20} color={Colors.white} />
+          <TouchableOpacity style={styles.actionIcon} onPress={onSavePress} activeOpacity={0.7}>
+            <Feather name="bookmark" size={20} color={venue.isSaved ? '#3B82F6' : Colors.white} />
           </TouchableOpacity>
         </View>
       </View>
