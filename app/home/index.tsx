@@ -46,6 +46,7 @@ export default function HomeScreen() {
     loadMore,
     selectCategory,
     toggleFavorite,
+    toggleSave,
     setLocation,
     setUserLocation,
     setSearchQuery,
@@ -98,14 +99,18 @@ export default function HomeScreen() {
     router.push(`/home/venue/${venueId}`);
   };
 
+  const handleSavePress = async (venueId: string) => {
+    await toggleSave(venueId);
+  };
+
   const handleMorePress = (venue: Venue) => {
     Alert.alert(
       venue.name,
       'Daha fazla seçenek',
       [
         { text: 'İptal', style: 'cancel' },
-        { text: 'Paylaş', onPress: () => {} },
-        { text: 'Şikayet Et', onPress: () => {}, style: 'destructive' },
+        { text: 'Paylaş', onPress: () => { } },
+        { text: 'Şikayet Et', onPress: () => { }, style: 'destructive' },
       ]
     );
   };
@@ -116,6 +121,7 @@ export default function HomeScreen() {
       onPress={() => handleVenuePress(item.id)}
       onFavoritePress={() => handleFavoritePress(item.id)}
       onCommentPress={() => handleCommentPress(item.id)}
+      onSavePress={() => handleSavePress(item.id)}
       onMorePress={() => handleMorePress(item)}
     />
   );

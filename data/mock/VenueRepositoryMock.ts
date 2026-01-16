@@ -2,7 +2,7 @@
 // Mock repository for development/testing
 
 import { Venue, PriceLevel } from '../../domain/entities/Venue';
-import { User } from '../../domain/entities/User';
+import { User, UserStats } from '../../domain/entities/User';
 import { Review } from '../../domain/entities/Review';
 import { LoginParams, RegisterParams } from '../../domain/repositories/AuthRepository';
 import { GetNearbyParams, SearchVenuesParams, AddVenueSuggestionParams, UpdateVenueProfileParams } from '../../domain/repositories/VenueRepository';
@@ -26,6 +26,7 @@ const MOCK_VENUES: Venue[] = [
     distanceMeters: 300,
     shortDescription: 'Modern ve sıcak bir atmosferde kaliteli kahve deneyimi',
     isFavorite: false,
+    isSaved: true,
     lat: 40.9848,
     lng: 29.0244,
     photos: [
@@ -53,6 +54,7 @@ const MOCK_VENUES: Venue[] = [
     distanceMeters: 450,
     shortDescription: 'Lezzetli burgerler ve patates kızartması',
     isFavorite: true,
+    isSaved: false,
     lat: 40.9850,
     lng: 29.0250,
   },
@@ -71,6 +73,7 @@ const MOCK_VENUES: Venue[] = [
     distanceMeters: 600,
     shortDescription: 'Geleneksel İtalyan pizzaları ve taze malzemeler',
     isFavorite: false,
+    isSaved: true,
     lat: 40.9860,
     lng: 29.0260,
   },
@@ -89,6 +92,7 @@ const MOCK_VENUES: Venue[] = [
     distanceMeters: 800,
     shortDescription: 'Taze balık ve geleneksel Japon mutfağı',
     isFavorite: true,
+    isSaved: true,
     lat: 40.9870,
     lng: 29.0270,
   },
@@ -107,6 +111,7 @@ const MOCK_VENUES: Venue[] = [
     distanceMeters: 200,
     shortDescription: 'Rahat bir ortamda kahve ve hafif yemekler',
     isFavorite: false,
+    isSaved: false,
     lat: 40.9840,
     lng: 29.0230,
   },
@@ -125,6 +130,7 @@ const MOCK_VENUES: Venue[] = [
     distanceMeters: 1200,
     shortDescription: 'Premium et çeşitleri ve özel soslar',
     isFavorite: false,
+    isSaved: false,
     lat: 40.9880,
     lng: 29.0280,
   },
@@ -143,6 +149,7 @@ const MOCK_VENUES: Venue[] = [
     distanceMeters: 550,
     shortDescription: 'Lezzetli vegan yemekler ve smoothie\'ler',
     isFavorite: false,
+    isSaved: false,
     lat: 40.9855,
     lng: 29.0255,
   },
@@ -161,6 +168,7 @@ const MOCK_VENUES: Venue[] = [
     distanceMeters: 350,
     shortDescription: 'Geleneksel Türk tatlıları ve baklava',
     isFavorite: true,
+    isSaved: true,
     lat: 40.9845,
     lng: 29.0245,
   },
@@ -179,6 +187,7 @@ const MOCK_VENUES: Venue[] = [
     distanceMeters: 900,
     shortDescription: 'Manzaralı çatı barında kokteyller',
     isFavorite: false,
+    isSaved: false,
     lat: 40.9875,
     lng: 29.0275,
   },
@@ -197,6 +206,7 @@ const MOCK_VENUES: Venue[] = [
     distanceMeters: 400,
     shortDescription: 'Zengin kahvaltı menüsü ve taze meyve suları',
     isFavorite: false,
+    isSaved: false,
     lat: 40.9847,
     lng: 29.0247,
   },
@@ -204,9 +214,18 @@ const MOCK_VENUES: Venue[] = [
 
 const MOCK_USER: User = {
   id: 'user1',
-  email: 'user@example.com',
-  name: 'Test User',
-  avatarUrl: 'https://i.pravatar.cc/150?img=1',
+  email: 'elif@example.com',
+  name: 'Elif Yılmaz',
+  avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
+  username: 'elif_foodie',
+  bio: 'İstanbul\'un en iyi kahvecilerini keşfediyorum ☕',
+  hashtags: ['#coffeelover', '#İstanbul'],
+};
+
+const MOCK_USER_STATS: UserStats = {
+  favoritesCount: 45,
+  reviewsCount: 12,
+  followersCount: 152,
 };
 
 // Simulate network delay
@@ -321,6 +340,7 @@ export class VenueRepositoryMock {
       distanceMeters: 0,
       shortDescription: params.description || '',
       isFavorite: false,
+      isSaved: false,
       lat: params.lat,
       lng: params.lng,
     };
@@ -393,5 +413,26 @@ export class VenueRepositoryMock {
   async getFavorites(listType: FavoriteListType): Promise<Venue[]> {
     await delay(SIMULATED_DELAY);
     return MOCK_VENUES.filter(v => v.isFavorite);
+  }
+
+  // Profile
+  async getUserStats(): Promise<UserStats> {
+    await delay(SIMULATED_DELAY);
+    return MOCK_USER_STATS;
+  }
+
+  async getSavedVenues(): Promise<Venue[]> {
+    await delay(SIMULATED_DELAY);
+    return MOCK_VENUES.filter(v => v.isSaved);
+  }
+
+  async toggleSave(venueId: string): Promise<boolean> {
+    await delay(300);
+    const venue = MOCK_VENUES.find(v => v.id === venueId);
+    if (venue) {
+      venue.isSaved = !venue.isSaved;
+      return venue.isSaved;
+    }
+    return false;
   }
 }

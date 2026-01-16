@@ -18,6 +18,7 @@ export interface Venue {
   distanceMeters: number;
   shortDescription: string;
   isFavorite: boolean;
+  isSaved: boolean;
   lat?: number;
   lng?: number;
   // Detail page fields
